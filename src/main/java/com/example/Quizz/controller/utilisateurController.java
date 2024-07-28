@@ -1,5 +1,11 @@
 package com.example.Quizz.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,7 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Quizz.models.infoAthentification;
 import com.example.Quizz.models.repAthentification;
@@ -24,47 +32,60 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/utilisateur")
 @AllArgsConstructor
 public class utilisateurController {
-	private final utilisateurServiceImpl users;
-	
+	private final utilisateurServiceImpl userService;
+	public static String uploadDirectory = System.getProperty("user.dir") + "/src/main/resources/images";
 	@PostMapping("/creer")
-	public retourAct Creer(@RequestBody utilisateur ut) {
-		return users.ajouter(ut);
+	public retourAct Creer(@RequestBody utilisateur ut){
+		//ut.setPhoto(originalName);
+		return userService.ajouter(ut);
+	}
+	
+	@PostMapping("/uploadProfil")
+	public String Upload(@RequestParam("image") MultipartFile file) throws IOException {
+		String originalName = file.getOriginalFilename();
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String fileExtension = originalName.substring(originalName.lastIndexOf("."));
+        originalName = originalName.substring(0, originalName.lastIndexOf(".")) + "_" + timeStamp + fileExtension;
+		System.out.println(originalName);
+		Path uploadPath = Paths.get(uploadDirectory,originalName);
+		Files.write(uploadPath, file.getBytes());
+		return originalName;
 	}
 	
 	@GetMapping("/afficheAll")
 	public List<utilisateur> AfficheAll(){
-		return users.afficherAll();
+		return userService.afficherAll();
 	}
 	
 	@DeleteMapping("/supprimer/{id}")
 	public retourAct Supprimer(@PathVariable String id) {
-		return users.supprimer(id);
+		return userService.supprimer(id);
 	}
 	
 	@PutMapping("/modifier/{id}")
 	public retourAct Modifier(@PathVariable String id,@RequestBody utilisateur ut) {
-		return users.modifier(id, ut);
+		return userService.modifier(id, ut);
 	}
 	
 	@PostMapping("/authentifier")
 	public repAthentification Athentifier(@RequestBody infoAthentification auth) {
-		return users.Athentifier(auth);
+		return userService.Athentifier(auth);
 	}
 	
 	@GetMapping("/changerRecord/{id}/{record}")
 	public retourAct Record(@PathVariable String id,@PathVariable int record) {
-		utilisateur ut=users.selectionner(id);
+		utilisateur ut=userService.selectionner(id);
 		ut.setRecord(record);
-		return users.modifier(id, ut);
+		return userService.modifier(id, ut);
 	}
 	@GetMapping("/mdp")
 	public String mot() {
-		return users.Validation_code();
+		return userService.Validation_code();
 	}
 	
 	@GetMapping("/changer_mdp/{id}")
 	public retourAct Changer(@PathVariable String id) {
-		return users.envoyer_code(id);
+		return userService.envoyer_code(id);
 	}
 	
 
