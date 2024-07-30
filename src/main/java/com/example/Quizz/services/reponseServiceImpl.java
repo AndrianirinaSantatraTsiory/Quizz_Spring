@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.Quizz.DAO.questionRepository;
 import com.example.Quizz.DAO.reponseRepository;
 import com.example.Quizz.DAO.utilisateurRepository;
 import com.example.Quizz.models.noteReponse;
@@ -20,6 +21,8 @@ import lombok.AllArgsConstructor;
 public class reponseServiceImpl implements reponseService {
 	private final utilisateurRepository utilisateurRep;
 	private final reponseRepository reponseRep;
+	private final questionServiceImpl questionServ;
+	private final utilisateurServiceImpl utilisateurServ;
 	private EntityManager entityManager;
 	@Override
 	public retourAct ajouter(reponse repo) {
@@ -129,12 +132,17 @@ public class reponseServiceImpl implements reponseService {
 		for(String id_rep:reponse) {
 			rep=reponseRep.findById(id_rep).get();
 			if(rep.getVerif_reponse()==1) {
-				note++;
+				question quest = questionServ.selectionner(rep.getId_question());
+				if(quest.getNiveau()==1)note++;
+				else if(quest.getNiveau()==2)note+=2;
+				else note+=3;
 			}
 		}
 		noteRep.setNote(note);
 		if(note>util.getRecord()) {
 			noteRep.setRecord(true);
+			util.setRecord(note);
+			utilisateurServ.modifier(util.getId_utilisateur(), util);
 		}
 		
 		return noteRep;

@@ -123,7 +123,7 @@ public class questionServiceImpl implements questionService{
 	}
 	@Override
 	public List<question> question_hasard() {
-		String[] niveau1=id_hasard(1,4);
+		String[] niveau1=id_hasard(1,5);
 		String[] niveau2=id_hasard(2,3);
 		String[] niveau3=id_hasard(3,3);
 		String req="select * from question where id_question in('"+niveau1[0]+"'";
@@ -143,40 +143,28 @@ public class questionServiceImpl implements questionService{
 				.getResultList();
 		return rep;
 	}
-	
-	public boolean existe(String[] quest,String question) {
-		boolean exist=false;
-		for(int i=0;i<2;i++) {
-			if(quest[i].equals(question)) {
-				exist=true;
-				break;
-			}
-		}
-		return exist;
-	}
 	public String[] id_hasard(int niveau,int nbr) {
 		@SuppressWarnings("unchecked")
 		List<question> allquestion=entityManager.createNativeQuery("select * from question where niveau="+niveau, question.class)
 				.getResultList();;
 		int n=allquestion.size();
+		System.out.println("size "+n);
 		int rand;
-		String[] allquest=new String[n];
+		List<String> allquest=new ArrayList<String>();
 		String[] quest_tire=new String[nbr];
-		//String req="";
 		for(int i=0;i<nbr;i++)
 			quest_tire[i]="an";
 		for(int i=0;i<n;i++) {
-			allquest[i]=allquestion.get(i).getId_question();
-		}
-		for(int i=0;i<nbr;i++) {
-			do {
-				rand=(int)(Math.random()*n);
-				
-			}while(existe(quest_tire,allquest[rand]));
-			quest_tire[i]=allquest[rand];
+			allquest.add(allquestion.get(i).getId_question());
 		}
 		
+		for(int i=0;i<nbr;i++) {
+			rand=(int)(Math.random()*allquest.size());
+			quest_tire[i]=allquest.get(rand);
+			allquest.remove(rand);
+		}
 		return quest_tire;
+		
 	}
 	@Override
 	public question selectionner(String id) {
