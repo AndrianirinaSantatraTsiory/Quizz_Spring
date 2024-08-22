@@ -43,7 +43,7 @@ public class reponseServiceImpl implements reponseService {
 		}
 		else if(repVrai.size()>0&&repo.getVerif_reponse()==1) {
 			retour.setSucces(false);
-			retour.setMessage("Il y a dejà une reponse vrai pour cette question merci de ne plus en saisir plus");
+			retour.setMessage("Il y a dejà une reponse vrai pour cette question merci de ne plus en ajouter plus");
 		}
 		else if(rep1.size()>0) {
 				reponseRep.save(repo);

@@ -17,13 +17,13 @@ public class utilisateur {
 	@Id()
 	@Column(length=20)
 	private String id_utilisateur;
-	@Column(length=30)
+	@Column(length=80)
 	private String nom;
 	
-	@Column(length=30)
+	@Column(length=50)
 	private String photo;
 	
-	@Column(length=20)
+	@Column(length=60)
 	private String mail;
 	
 	@Column(length=255)
