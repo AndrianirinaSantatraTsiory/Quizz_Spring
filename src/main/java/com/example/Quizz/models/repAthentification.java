@@ -11,12 +11,14 @@ public class repAthentification {
 	private String nom;
 	private String message;
 	private String photo;
+	private String jwtToken;
 	public repAthentification() {
 		succes=false;
 		id="";
 		nom="";
 		message="";
 		photo="";
+		jwtToken="";
 	}
 
 }

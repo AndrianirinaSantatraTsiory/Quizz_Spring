@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,6 @@ import com.example.Quizz.models.infoAthentification;
 import com.example.Quizz.models.repAthentification;
 import com.example.Quizz.models.retourAct;
 import com.example.Quizz.models.utilisateur;
-import com.example.Quizz.services.reponseServiceImpl;
 import com.example.Quizz.services.utilisateurServiceImpl;
 
 import lombok.AllArgsConstructor;
@@ -33,7 +33,10 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class utilisateurController {
 	private final utilisateurServiceImpl userService;
+	
 	public static String uploadDirectory = System.getProperty("user.dir") + "/src/main/resources/images";
+	
+	
 	@PostMapping("/creer")
 	public retourAct Creer(@RequestBody utilisateur ut){
 		//ut.setPhoto(originalName);
@@ -52,6 +55,7 @@ public class utilisateurController {
 		return originalName;
 	}
 	
+	@PreAuthorize("hasAuthority('admin')")
 	@GetMapping("/afficheAll")
 	public List<utilisateur> AfficheAll(){
 		return userService.afficherAll();

@@ -1,24 +1,28 @@
 package com.example.Quizz.services;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.security.sasl.AuthenticationException;
+
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 //import org.springframework.security.crypto;
 import com.example.Quizz.DAO.utilisateurRepository;
 import com.example.Quizz.models.infoAthentification;
-import com.example.Quizz.models.question;
 import com.example.Quizz.models.repAthentification;
-import com.example.Quizz.models.reponse;
 import com.example.Quizz.models.retourAct;
 import com.example.Quizz.models.utilisateur;
+import com.example.Quizz.security.JwtUtils;
 
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
@@ -26,10 +30,12 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class utilisateurServiceImpl implements utilisateurService {
-	@Autowired
+	//@Autowired
 	private final JavaMailSender mailSender;
 	private final EntityManager entityManager;
 	private final utilisateurRepository utilisateurRep;
+	private AuthenticationManager authenticationManager;
+	private JwtUtils jwtUtils;
 
 	@Override
 	public retourAct ajouter(utilisateur util) {
@@ -110,7 +116,25 @@ public class utilisateurServiceImpl implements utilisateurService {
 
 	@Override
 	public repAthentification Athentifier(infoAthentification info) {
+		Authentication authentication=null;
 		repAthentification retour=new repAthentification();
+		/*try {
+			authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(info.getIdentifiant(), info.getMdp()));
+		}catch(Exception exception) {
+			System.out.println("Authentication error ==> : "+exception);
+			retour.setSucces(false);
+			retour.setMessage("Login ou mot de passe incorrect");
+		}
+		
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		
+		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+		
+		String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
+		
+		retour.setJwtToken(jwtToken);*/
+		
+		//repAthentification retour=new repAthentification();
 		BCryptPasswordEncoder bcrypt=new BCryptPasswordEncoder();
 		@SuppressWarnings("unchecked")
 		List<utilisateur> ident=entityManager.createNativeQuery("select * from utilisateur where mail ='"+info.getIdentifiant()+"' or id_utilisateur='"+info.getIdentifiant()+"'", utilisateur.class)
@@ -133,6 +157,9 @@ public class utilisateurServiceImpl implements utilisateurService {
 						ut.setValidation("");
 						utilisateurRep.save(ut);
 					}
+					String jwtToken = jwtUtils.generateTokenFromUsername(ut);
+					
+					retour.setJwtToken(jwtToken);
 				}
 				else{
 					retour.setMessage("Verifiez votre mot de passe");
