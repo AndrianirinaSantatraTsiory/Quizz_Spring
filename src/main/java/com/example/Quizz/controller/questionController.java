@@ -3,6 +3,7 @@ package com.example.Quizz.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,17 +26,21 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class questionController {
 	private final questionServiceImpl questServiceImpl;
+	
+	@PreAuthorize("hasAuthority('admin')")
 	@PostMapping("/ajouter")
 	public retourAct Ajouter(@RequestBody question quest ){
 		return questServiceImpl.ajouter(quest);
 		//return new retourAct(true, "message");
 	}
 	
+	@PreAuthorize("hasAuthority('admin')")
 	@DeleteMapping("/supprimer/{id}")
 	public retourAct Supprimer(@PathVariable String id) {
 		return questServiceImpl.supprimer(id);
 	}
 	
+	@PreAuthorize("hasAuthority('admin')")
 	@PutMapping("/modifier/{id}")
 	public retourAct Modifier(@PathVariable String id,@RequestBody question quest) {
 		retourAct retour=new retourAct();
@@ -43,6 +48,7 @@ public class questionController {
 		return retour;
 	}
 	
+	@PreAuthorize("hasAuthority('admin')")
 	@GetMapping("/afficheAll")
 	public List<question> AfficherAll(){
 		return questServiceImpl.afficherAll();
@@ -52,16 +58,20 @@ public class questionController {
 	public String suggest() {
 		return questServiceImpl.suggestion_Id();
 	}
+	
+	@PreAuthorize("hasAuthority('admin')")
 	@GetMapping("/rechercher/{to_search}")
 	public List<question> Rechercher(@PathVariable String to_search) {
 		return questServiceImpl.rechereche(to_search);
 	}
+	
+	@PreAuthorize("hasAuthority('admin')")
 	@GetMapping("/reponse_a_question/{id}")
 	public List<reponse> ListerReponse(@PathVariable String id){
 		return questServiceImpl.reponse_a_question(id);
-		
 	}
 	
+	@PreAuthorize("hasAuthority('admin')")
 	@GetMapping("/verif_existance_reponse/{id}")
 	public retourAct Verification_existance_reponse(@PathVariable String id) {
 		return questServiceImpl.verif_existance_reponse(id);

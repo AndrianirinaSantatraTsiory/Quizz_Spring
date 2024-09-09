@@ -66,6 +66,7 @@ public class utilisateurController {
 		return userService.supprimer(id);
 	}
 	
+	@PreAuthorize("hasAuthority('admin')")
 	@PutMapping("/modifier/{id}")
 	public retourAct Modifier(@PathVariable String id,@RequestBody utilisateur ut) {
 		return userService.modifier(id, ut);

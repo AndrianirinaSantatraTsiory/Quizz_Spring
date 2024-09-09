@@ -3,6 +3,7 @@ package com.example.Quizz.controller;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,26 +25,37 @@ import lombok.AllArgsConstructor;
 public class reponseController {
 	private final reponseServiceImpl reps;
 	
+	@PreAuthorize("hasAuthority('admin')")
 	@PostMapping("/ajouter")
 	public retourAct Ajouter(@RequestBody reponse rep) {
 		return reps.ajouter(rep);
 	}
+	
+	@PreAuthorize("hasAuthority('admin')")
 	@DeleteMapping("/supprimer/{id}")
 	public retourAct Supprimer(@PathVariable String id) {
 		return reps.supprimer(id);
 	}
+	
+	@PreAuthorize("hasAuthority('admin')")
 	@GetMapping("/afficheAll")
 	public List<reponse> AfficheAll(){
 		return reps.afficheAll();
 	}
+	
+	@PreAuthorize("hasAuthority('admin')")
 	@PutMapping("/modifier/{id}")
 	public retourAct Modifier(@PathVariable String id,@RequestBody reponse rep ) {
 		return reps.modifier(id, rep);
 	}
+	
+	
 	@GetMapping("/suggestion")
 	public String Suggest() {
 		return reps.suggestion_Id();
 	}
+	
+	@PreAuthorize("hasAuthority('admin')")
 	@GetMapping("/rechercher/{to_search}")
 	public List<reponse> Rechercher(@PathVariable String to_search) {
 		return reps.rechereche(to_search);
